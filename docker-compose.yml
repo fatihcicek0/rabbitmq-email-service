@@ -1,0 +1,37 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - rabbitmq_network
+
+  register-service:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: register-service
+    ports:
+      - "3000:3000"
+    networks:
+      - rabbitmq_network
+    depends_on:
+      - rabbitmq
+
+  consumer-service:
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+    container_name: consumer-service
+    networks:
+      - rabbitmq_network
+    depends_on:
+      - rabbitmq
+
+networks:
+  rabbitmq_network:
+    driver: bridge
+F
